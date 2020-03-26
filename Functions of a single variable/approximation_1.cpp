@@ -4,6 +4,9 @@
 
 int approximation_1(double a, double b, int n, double *coef)
 {
-    memset(coef, 1, __SIZEOF_DOUBLE__*(n + 1));
+    for(int i = 0; i < n + 1; i++)
+    {
+        coef[i] = 1;
+    }
     return 0;
 }

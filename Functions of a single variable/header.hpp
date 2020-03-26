@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<cmath>
 #include<cstring>
+#include<iostream>
 
 double f(double x);
 double polynomial_value(double x, double *coef, int n);

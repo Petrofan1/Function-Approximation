@@ -92,7 +92,6 @@ void Window::paintEvent (QPaintEvent * /* event */)
     if (y1 > max_y)
       max_y = y1;
   }
-
   delta_y = 0.01*(max_y - min_y);
   min_y -= delta_y;
   max_y += delta_y;
@@ -130,5 +129,5 @@ void Window::paintEvent (QPaintEvent * /* event */)
   // render function name
   painter.setPen ("blue");
   painter.drawText (0, 20, approx_name);
-
+  delete [] coef;
 }
