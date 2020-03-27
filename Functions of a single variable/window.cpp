@@ -2,8 +2,10 @@
 #include "header.hpp"
 
 #define DEFAULT_A -10
-#define DEFAULT_B 10  
-#define DEFAULT_N 1980
+#define DEFAULT_B 10
+#define DEFAULT_N 11
+#define SCREEN_SIZE 1980
+#define NUMBER_OF_FUNCTIONS 2
 
 Window::Window (QWidget *parent)
   : QWidget (parent)
@@ -13,7 +15,7 @@ Window::Window (QWidget *parent)
   N = DEFAULT_N;
 
   approx_id = 0;
-
+  change_approx ();
   change_func ();
 }
 
@@ -44,8 +46,7 @@ int Window::parse_command_line (int argc, char *argv[])
   return 0;
 }
 
-/// change current function for drawing
-void Window::change_func ()
+void Window::change_approx()
 {
   approx_id = (approx_id + 1) % 2;
 
@@ -54,39 +55,57 @@ void Window::change_func ()
     case 0:
       approx_name = "Newton's interpolation with multiple nodes";
       approx = approximation_0;
+      polynom_val = polynomial_value_0;
       break;
     case 1:
-      approx_name = "Other method";
+      approx_name = "Piecewise interpolation by cubic Bessel polynomials";
       approx = approximation_1;
+      polynom_val = polynomial_value_1;
       break;
   }
   update ();
 }
 
-/// render graph
-void Window::paintEvent (QPaintEvent * /* event */)
+void Window::change_func()
+{
+  func_id = (func_id + 1) % NUMBER_OF_FUNCTIONS;
+
+  switch (func_id)
+  {
+    case 0:
+      func_name = "First func";
+      f = f_0;
+      f_der = f_der_0;
+      break;
+    case 1:
+      func_name = "Second func";
+      f = f_1;
+      f_der = f_der_1;
+      break;
+  }
+  update ();
+}
+
+void Window::paintEvent (QPaintEvent *)
 {  
   QPainter painter (this);
   double x1, x2, y1, y2;
-  double max_y, min_y;
-  double delta_y, delta_x = (b - a) / N;
-  int n = 3; // степень многочлена
+  double max_y, min_y, delta_y;
+  double step = (b - a)/width();
   double *coef;
-  coef = new double[n + 1];
+  coef = new double[4*N];
 
-  approx(a, b, n, coef);
+  approx(f, f_der, a, b, N, coef);
 
-  QPen pen_black(Qt::black, 0, Qt::SolidLine); 
-  QPen pen_red(Qt::red, 0, Qt::SolidLine); 
+  QPen balck_pen(Qt::black, 0, Qt::SolidLine); 
+  QPen red_pen(Qt::red, 0, Qt::SolidLine); 
+  QPen blue_pen(Qt::blue, 0, Qt::SolidLine); 
 
-  painter.setPen (pen_black);
-
-  // calculate min and max for current function
   max_y = 0;
   min_y = 0;
-  for (x1 = a; x1 - b < 1.e-6; x1 += delta_x)
+  for (x1 = a; x1 - b < step; x1 += step)
   {
-    y1 = polynomial_value(x1, coef, n);
+    y1 = polynom_val(x1, a, b, N, coef);
     if (y1 < min_y)
       min_y = y1;
     if (y1 > max_y)
@@ -96,37 +115,46 @@ void Window::paintEvent (QPaintEvent * /* event */)
   min_y -= delta_y;
   max_y += delta_y;
 
-  // save current Coordinate System
-  painter.save ();
+  painter.save();
 
-  // make Coordinate Transformations
-  painter.translate (0.5 * width (), 0.5 * height ());
-  painter.scale (width () / (b - a), -height () / (max_y - min_y));
-  painter.translate (-0.5 * (a + b), -0.5 * (min_y + max_y));
+  painter.translate (0.5*width(), 0.5*height());
+  painter.scale (width()/(b - a), -height()/(max_y - min_y));
+  painter.translate (-0.5*(a + b), -0.5*(min_y + max_y));
 
-  // draw approximated line for graph
+  painter.setPen (red_pen);
+  painter.drawLine (QPointF(a, 0), QPointF(b, 0));
+  painter.drawLine (QPointF(0, min_y), QPointF(0 , max_y));
+
+  painter.setPen (balck_pen);
   x1 = a;
-  y1 = polynomial_value(x1, coef, n);
-  for (x2 = x1 + delta_x; x2 - b < 1.e-6; x2 += delta_x) 
+  y1 = polynom_val(x1, a, b, N, coef);
+  for (x2 = x1 + step; x2 - b < step; x2 += step) 
   {
-    y2 = polynomial_value(x2, coef, n);
+    y2 = polynom_val(x2, a, b, N, coef);
     painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
 
     x1 = x2, y1 = y2;
   }
   x2 = b;
-  y2 = polynomial_value(x2, coef, n);
+  y2 = polynom_val(x2, a, b, N, coef);
   painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
 
-  // draw axis
-  painter.setPen (pen_red);
-  painter.drawLine (a, 0, b, 0);
-  painter.drawLine (0, max_y, 0, min_y);
+  painter.setPen (blue_pen);
+  x1 = a;
+  y1 = f_(x1);
+  for (x2 = x1 + step; x2 - b < step; x2 += step) 
+  {
+    y2 = f_1(x2);
+    painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
 
-  // restore previously saved Coordinate System
+    x1 = x2, y1 = y2;
+  }
+  x2 = b;
+  y2 = f_1(x2);
+  painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
+
   painter.restore ();
 
-  // render function name
   painter.setPen ("blue");
   painter.drawText (0, 20, approx_name);
   delete [] coef;

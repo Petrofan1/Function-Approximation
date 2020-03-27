@@ -1,13 +1,7 @@
 #include <QPainter>
 
 #include"header.hpp"
-
-double polynomial_value(double x, double *coef, int n) 
+double point_value(int n, int i, double a, double b)
 {
-    double value = 0.0;
-    for(int i = 0; i <= n; i++)
-    {
-        value += coef[i]*pow(x, i);
-    }
-    return value;
+    return a + i*(b - a)/(n - 1);
 }
