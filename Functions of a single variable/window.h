@@ -16,25 +16,21 @@ private:
   double a;
   double b;
   int N;
-  // double (*fun) (double);
   double (*f) (double);
   double (*f_der) (double);
   double (*polynom_val) (double, double, double, int, double*);
   int (*approx) (double (*f) (double), double (*f_der) (double), double, double, int, double*);
+
 public:
   Window (QWidget *parent);
-
-  QSize minimumSizeHint () const;
-  QSize sizeHint () const;
-
-  int parse_command_line (int argc, char *argv[]);
+  QSize minimumSizeHint() const;
+  QSize sizeHint() const;
+  int parse_command_line(int argc, char *argv[]);
+  void paintEvent (QPaintEvent *event);
 
 public slots:
   void change_func();
   void change_approx();
-
-protected:
-  void paintEvent (QPaintEvent *event);
 };
 
 #endif

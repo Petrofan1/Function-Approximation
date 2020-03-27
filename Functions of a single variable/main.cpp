@@ -16,12 +16,12 @@ int main (int argc, char *argv[])
   Window *graph_area = new Window(window);
   QAction *action;
 
-  if (graph_area->parse_command_line (argc, argv))
-    {
-      QMessageBox::warning (0,  "Wrong input arguments!", 
-                                "Wrong input arguments!");
-      return -1;
-    }
+  if (graph_area->parse_command_line(argc, argv))
+  {
+    QMessageBox::warning (0,  "Wrong input arguments!", 
+                              "Wrong input arguments!");
+    return -1;
+  }
 
   action = tool_bar->addAction("&Change method", graph_area, SLOT(change_approx()));
   action->setShortcut (QString("Ctrl+C"));
@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
   action = tool_bar->addAction("&Exit", window, SLOT (close ()));
   action->setShortcut (QString("Ctrl+X"));
 
-  tool_bar->setMaximumHeight (30);
+  tool_bar->setMaximumHeight(30);
 
   window->setMenuBar(tool_bar);
   window->setCentralWidget (graph_area);

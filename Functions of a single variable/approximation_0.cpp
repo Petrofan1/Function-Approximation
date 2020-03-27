@@ -37,10 +37,6 @@ int approximation_0(double f(double), double f_der(double), double a, double b, 
         }
         coef[2*(j + 1)- 1] = (coef[2*(j + 1) - 1] - coef[2*(j + 1)- 2]) / (j* delta);
     }
-    for(int i = 0; i < 2*N; i++)
-    {
-        std::cout<<coef[i]<<std::endl;
-    }
     return 0;
 }
 double polynomial_value_0(double x, double a, double b, int N, double *coef) 
@@ -55,17 +51,3 @@ double polynomial_value_0(double x, double a, double b, int N, double *coef)
     }
     return sum;
 }
-// for (step = 2; step <= n_; step++)
-// {
-//     for (i = 2 * n_ - 1; i >= 2 * step - 1; i -= 2)
-//     {
-//         polynom[i] = (polynom[i] - polynom[i - 1]) / ((step - 1) * delta_x);
-//         polynom[i - 1] = (polynom[i - 1] - polynom[i - 2]) / ((step - 1) * delta_x);
-//     }
-//     for (i = 2 * n_ - 1; i >= 2 * step + 1; i -= 2)
-//     {
-//         polynom[i] = (polynom[i] - polynom[i - 1]) / ((step - 1) * delta_x);
-//         polynom[i - 1] = (polynom[i - 1] - polynom[i - 2]) / (step * delta_x);
-//     }
-//     polynom[2 * step - 1] = (polynom[2 * step - 1] - polynom[2 * step - 2]) / ((step - 1) * delta_x);
-// }

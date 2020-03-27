@@ -7,40 +7,37 @@
 #define SCREEN_SIZE 1980
 #define NUMBER_OF_FUNCTIONS 2
 
-Window::Window (QWidget *parent)
-  : QWidget (parent)
+Window::Window (QWidget *parent) : QWidget (parent)
 {
   a = DEFAULT_A;
   b = DEFAULT_B;
   N = DEFAULT_N;
 
   approx_id = 0;
-  change_approx ();
-  change_func ();
+  change_approx();
+  change_func();
 }
 
-QSize Window::minimumSizeHint () const
+QSize Window::minimumSizeHint() const
 {
-  return QSize (100, 100);
+  return QSize(100, 100);
 }
 
-QSize Window::sizeHint () const
+QSize Window::sizeHint() const
 {
-  return QSize (1000, 1000);
+  return QSize(2000, 1500);
 }
 
 int Window::parse_command_line (int argc, char *argv[])
 {
-  if (argc == 1)
-    return 0;
-  if (argc == 2)
-    return -1;
+  if (argc == 1)  return 0;
+  if (argc == 2)  return -1;
 
   if (   sscanf (argv[1], "%lf", &a) != 1
       || sscanf (argv[2], "%lf", &b) != 1
       || b - a < 1.e-6
       || (argc > 3 && sscanf (argv[3], "%d", &N) != 1)
-      || N <= 0)
+      || N < 2)
     return -2;
 
   return 0;
@@ -49,7 +46,6 @@ int Window::parse_command_line (int argc, char *argv[])
 void Window::change_approx()
 {
   approx_id = (approx_id + 1) % 2;
-
   switch (approx_id)
   {
     case 0:
@@ -63,13 +59,12 @@ void Window::change_approx()
       polynom_val = polynomial_value_1;
       break;
   }
-  update ();
+  update();
 }
 
 void Window::change_func()
 {
   func_id = (func_id + 1) % NUMBER_OF_FUNCTIONS;
-
   switch (func_id)
   {
     case 0:
@@ -94,7 +89,7 @@ void Window::paintEvent (QPaintEvent *)
   double step = (b - a)/width();
   double *coef;
   coef = new double[4*N];
-
+  memset(coef, 0, 4*N*sizeof(double));
   approx(f, f_der, a, b, N, coef);
 
   QPen balck_pen(Qt::black, 0, Qt::SolidLine); 
@@ -106,10 +101,8 @@ void Window::paintEvent (QPaintEvent *)
   for (x1 = a; x1 - b < step; x1 += step)
   {
     y1 = polynom_val(x1, a, b, N, coef);
-    if (y1 < min_y)
-      min_y = y1;
-    if (y1 > max_y)
-      max_y = y1;
+    if (y1 < min_y) min_y = y1;
+    if (y1 > max_y) max_y = y1;
   }
   delta_y = 0.01*(max_y - min_y);
   min_y -= delta_y;
@@ -117,13 +110,13 @@ void Window::paintEvent (QPaintEvent *)
 
   painter.save();
 
-  painter.translate (0.5*width(), 0.5*height());
-  painter.scale (width()/(b - a), -height()/(max_y - min_y));
-  painter.translate (-0.5*(a + b), -0.5*(min_y + max_y));
+  painter.translate(0.5*width(), 0.5*height());
+  painter.scale(width()/(b - a), -height()/(max_y - min_y));
+  painter.translate(-0.5*(a + b), -0.5*(min_y + max_y));
 
-  painter.setPen (red_pen);
-  painter.drawLine (QPointF(a, 0), QPointF(b, 0));
-  painter.drawLine (QPointF(0, min_y), QPointF(0 , max_y));
+  painter.setPen(red_pen);
+  painter.drawLine(QPointF(a, 0), QPointF(b, 0));
+  painter.drawLine(QPointF(0, min_y), QPointF(0 , max_y));
 
   painter.setPen (balck_pen);
   x1 = a;
@@ -131,31 +124,30 @@ void Window::paintEvent (QPaintEvent *)
   for (x2 = x1 + step; x2 - b < step; x2 += step) 
   {
     y2 = polynom_val(x2, a, b, N, coef);
-    painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
+    painter.drawLine (QPointF(x1, y1), QPointF(x2, y2));
 
     x1 = x2, y1 = y2;
   }
   x2 = b;
   y2 = polynom_val(x2, a, b, N, coef);
-  painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
+  painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
 
-  painter.setPen (blue_pen);
+  painter.setPen(blue_pen);
   x1 = a;
-  y1 = f_(x1);
+  y1 = f(x1);
   for (x2 = x1 + step; x2 - b < step; x2 += step) 
   {
-    y2 = f_1(x2);
-    painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
-
+    y2 = f(x2);
+    painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
     x1 = x2, y1 = y2;
   }
   x2 = b;
-  y2 = f_1(x2);
-  painter.drawLine (QPointF (x1, y1), QPointF (x2, y2));
+  y2 = f(x2);
+  painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
 
-  painter.restore ();
+  painter.restore();
 
-  painter.setPen ("blue");
-  painter.drawText (0, 20, approx_name);
+  painter.setPen("blue");
+  painter.drawText(0, 20, approx_name);
   delete [] coef;
 }
