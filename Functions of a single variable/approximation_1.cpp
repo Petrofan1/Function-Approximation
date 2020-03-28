@@ -28,7 +28,7 @@ double d(int i, int N, double a, double b, double f(double))
     }
     return 0;
 }
-int approximation_1(double f(double), double f_der(double), double a, double b, int N, double *coef)
+int approximation_1(double f(double), double (double), double a, double b, int N, double *coef)
 {
     double f_diff, d_x, d_y, delta, x, y;
     for(int i = 0; i < N - 1; i++)
@@ -54,5 +54,9 @@ double polynomial_value_1(double x, double a, double b, int N, double *coef)
     while(a + i*delta <= x) i++;
     i--;
     diff = x - (a + i*delta);
+    if(fabs(b - x) < 1e-10)
+    {
+        i = N - 2;
+    }
     return coef[i*4] + diff*coef[i*4 + 1] + diff*diff*diff*coef[i*4 + 2] + diff*diff*diff*coef[i*4 + 3];
 }
