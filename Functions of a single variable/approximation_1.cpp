@@ -1,45 +1,42 @@
 /* Piecewise interpolation by cubic Bessel polynomials */
 
 #include"header.hpp"
-double d(int i, int N, double a, double b, double f(double))
+double d(int i, int N, double *x, double *func)
 {
-    double x, y, z, diff_z_x, diff_y_x, diff_z_y;
+    double x_temp, y_temp, z_temp, diff_z_x, diff_y_x, diff_z_y;
     if(i != 0 && i != N - 1)
     {
-        x = point_value(N, i - 1, a, b);
-        y = point_value(N, i, a, b);
-        z = point_value(N, i + 1, a, b);
-        diff_y_x = y - x;
-        diff_z_x = z - x;
-        diff_z_y = z - y;
-        return (diff_z_y*((f(y) - f(x))/diff_y_x) + diff_y_x*((f(z) - f(y))/diff_z_y))/diff_z_x;
+        x_temp = x[i - 1];
+        y_temp = x[i];
+        z_temp = x[i + 1];
+        diff_y_x = y_temp - x_temp;
+        diff_z_x = z_temp - x_temp;
+        diff_z_y = z_temp - y_temp;
+        return (diff_z_y*((func[i] - func[i - 1])/diff_y_x) + diff_y_x*((func[i + 1] - func[i])/diff_z_y))/diff_z_x;
     }
     else if(i == 0)
     {
-        x = a;
-        y = a + (b - a)/(N - 1);
-        return 0.5*(3*((f(y) - f(x))/(y - x)) - d(1, N, a, b, f));
-    }
+        return d(1, N, x, func);
+    }   
     else if(i == N - 1)
     {
-        x = b - (b - a)/(N - 1);
-        y = b;
-        return 0.5*(3*((f(y) - f(x))/(y - x)) - d(N - 2, N, a, b, f));
+       return d(N - 2, N, x, func);
     }
     return 0;
 }
-int approximation_1(double f(double), double (double), double a, double b, int N, double *coef)
+int approximation_1(int N, double *x, double *func, double*, double *coef)
 {
-    double f_diff, d_x, d_y, delta, x, y;
-    for(int i = 0; i < N - 1; i++)
+
+    double f_diff, d_x, d_y, delta, x_temp, y_temp;
+    for(int i = 0; i < N; i++)
     {
-        x = point_value(N, i, a, b);
-        y = point_value(N, i + 1, a, b);
-        delta = (b - a)/(N - 1);
-        d_x = d(i, N, a, b, f);
-        d_y = d(i + 1, N, a, b, f);
-        f_diff = (f(y) - f(x))/delta;
-        coef[i*4] = f(x);
+        x_temp = x[i];
+        y_temp = x[i + 1];
+        delta = y_temp - x_temp;
+        d_x = d(i, N, x, func);
+        d_y = d(i + 1, N, x, func);
+        f_diff = (func[i + 1] - func[i])/delta;
+        coef[i*4] = func[i];
         coef[i*4 + 1] = d_x;
         coef[i*4 + 2] = (3*f_diff - 2*d_x - d_y)/delta;
         coef[i*4 + 3] = (d_x + d_y - 2*f_diff)/(delta*delta);
@@ -54,9 +51,5 @@ double polynomial_value_1(double x, double a, double b, int N, double *coef)
     while(a + i*delta <= x) i++;
     i--;
     diff = x - (a + i*delta);
-    if(fabs(b - x) < 1e-10)
-    {
-        i = N - 2;
-    }
     return coef[i*4] + diff*coef[i*4 + 1] + diff*diff*diff*coef[i*4 + 2] + diff*diff*diff*coef[i*4 + 3];
 }

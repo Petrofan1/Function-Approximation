@@ -2,13 +2,13 @@
 
 #include"header.hpp"
 
-int approximation_0(double f(double), double f_der(double), double a, double b, int N, double *coef)
+int approximation_0(int N, double *x, double *func, double *func_der, double *coef)
 {
     double temp = 0;
-    double delta = (b - a)/(N - 1);
+    double delta = x[1] - x[0];
     for(int i = 0; i < 2*N; i += 2)
     {
-        temp = f(point_value(N, i/2, a, b));
+        temp = func[i/2];
         coef[i] = temp;
         coef[i + 1] = temp;
     }
@@ -16,7 +16,7 @@ int approximation_0(double f(double), double f_der(double), double a, double b, 
     {
         if(i % 2 == 0)
         {
-            coef[i + 1] = f_der(point_value(N, i/2, a, b));
+            coef[i + 1] = func_der[i/2];
         }
         else
         {

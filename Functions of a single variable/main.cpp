@@ -18,27 +18,24 @@ int main (int argc, char *argv[])
 
   if (graph_area->command_line(argc, argv))
   {
-    QMessageBox::warning (0,  "Wrong input arguments!", 
-                              "Usage: a b n");
+    QMessageBox::warning (0,  "Wrong input arguments!", "Usage: a b n k");
     return -1;
   }
 
-  action = tool_bar->addAction("&Change method", graph_area, SLOT(change_approx()));
+  action = tool_bar->addAction("&Change method", graph_area, SLOT(change_approximation()));
   action->setShortcut (QString("1"));
-  action = tool_bar->addAction("&Change function", graph_area, SLOT(change_func()));
-  action->setShortcut (QString("3"));
-  action = tool_bar->addAction("&Exit", window, SLOT (close ()));
-  action->setShortcut (QString("Ctrl+X"));
-  action = tool_bar->addAction("&Reduce n", graph_area, SLOT(reduce_n()));
-  action->setShortcut (QString("2"));
+  action = tool_bar->addAction("&Change function", graph_area, SLOT(change_function()));
+  action->setShortcut (QString("0"));
   action = tool_bar->addAction("&Increase n", graph_area, SLOT(increase_n()));
-  action->setShortcut (QString("8"));
-  action = tool_bar->addAction("&Residual", graph_area, SLOT(residual()));
+  action->setShortcut (QString("4"));
+  action = tool_bar->addAction("&Reduce n", graph_area, SLOT(reduce_n()));
   action->setShortcut (QString("5"));
   action = tool_bar->addAction("-", graph_area, SLOT(increase_scale()));
-  action->setShortcut (QString("-"));
+  action->setShortcut (QString("3"));
   action = tool_bar->addAction("+", graph_area, SLOT(decrease_scale()));
-  action->setShortcut (QString("+"));
+  action->setShortcut (QString("2"));
+  action = tool_bar->addAction("&Exit", window, SLOT (close ()));
+  action->setShortcut (QString("Ctrl+X"));
 
   tool_bar->setMaximumHeight(30);
 
