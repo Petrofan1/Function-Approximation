@@ -45,11 +45,8 @@ int approximation_1(int N, double *x, double *func, double*, double *coef)
 }
 double polynomial_value_1(double x, double a, double b, int N, double *coef) 
 {
-    int i = 0;
-    double diff;
-    double delta = (b - a)/(N - 1);
-    while(a + i*delta <= x) i++;
-    i--;
+    double diff, delta = (b - a)/(N - 1);
+    int i = (x - a)/delta;
     diff = x - (a + i*delta);
     return coef[i*4] + diff*coef[i*4 + 1] + diff*diff*diff*coef[i*4 + 2] + diff*diff*diff*coef[i*4 + 3];
 }

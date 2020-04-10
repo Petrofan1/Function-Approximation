@@ -46,7 +46,7 @@ double polynomial_value_0(double x, double a, double b, int N, double *coef)
     sum += coef[0];
     for(int i = 1; i < 2*N; i++)
     {
-        temp *= (x - point_value(N, (i - 1)/2, a, b));
+        temp *= (x - (a + ((i - 1)/2)*(b - a)/(N - 1)));
         sum += temp*coef[i];
     }
     return sum;
