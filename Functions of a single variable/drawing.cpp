@@ -4,11 +4,12 @@
 
 Window::Window (QWidget *parent) : QWidget (parent)
 {
-  approx_0 = new double[4];
-  approx_1 = new double[4];
-  x = new double[1];
-  func = new double[1];
-  func_der = new double[1];
+  N = 1;
+  approx_0 = new double[4*N];
+  approx_1 = new double[4*N];
+  x = new double[N];
+  func = new double[N];
+  func_der = new double[N];
 }
 
 Window::~Window(){
@@ -83,19 +84,16 @@ void Window::draw_residual(QPainter *painter, double *approx)
 void Window::paintEvent (QPaintEvent *)
 {  
   QPainter painter (this);
-  double max_y, min_y, delta_y, delta, local_a, local_b;
+  double max_y = 0, min_y = 0, delta_y, delta, local_a, local_b;
   local_a = (a + b)/2 - 0.5*(b - a)*scale;
   local_b = (a + b)/2 + 0.5*(b - a)*scale; 
-
   QPen black_pen(Qt::black, 0, Qt::SolidLine); 
   QPen red_pen(Qt::red, 0, Qt::SolidLine); 
   QPen blue_pen(Qt::blue, 0, Qt::SolidLine);
   QPen green_pen(Qt::green, 0, Qt::SolidLine);
   QPen orange_pen(QColor("orange"), 0, Qt::SolidLine);
-
   find_min_max(approx_0, approx_1, &min_y, &max_y, scale);
-  std::cout<<"f_min = "<<min_y<<std::endl;
-  std::cout<<"f_max = "<<max_y<<std::endl;
+  std::cout<<"max_abs = "<<((fabs(min_y) > fabs(max_y))? fabs(min_y): fabs(max_y))<<std::endl;
   std::cout<<std::endl;
   delta_y = 0.01*(max_y - min_y);
   if(fabs(max_y - min_y) < EPS) delta = 1;
@@ -133,7 +131,7 @@ void Window::paintEvent (QPaintEvent *)
     polynom_val = polynomial_value_1;
     draw_approximation(&painter, approx_1);
   }
-  if(RESIDUAL_0 == true && !(N > 50))
+  if(RESIDUAL_0 == true && N < 50)
   {
     painter.setPen(green_pen);
     polynom_val = polynomial_value_0;
@@ -150,12 +148,13 @@ void Window::paintEvent (QPaintEvent *)
   
   painter.setPen(black_pen);
   
-  QString draw_N, draw_a_b, draw_min_max, draw_scale_p;
+  QString draw_N, draw_a_b, draw_abs_max, draw_scale_p;
 
-  draw_min_max.append("f_min = ");
-  draw_min_max.append(QString::number(min_y + delta_y));
-  draw_min_max.append("    f_max = ");
-  draw_min_max.append(QString::number(max_y - delta_y));
+  min_y += delta_y;
+  max_y -= delta_y;
+  draw_abs_max.append("abs_max = ");
+  draw_abs_max.append(QString::number((fabs(min_y) > fabs(max_y))? fabs(min_y): fabs(max_y)));
+ 
   
   draw_scale_p.append("Scale = ");
   draw_scale_p.append(QString::number(1/scale));
@@ -174,7 +173,7 @@ void Window::paintEvent (QPaintEvent *)
   painter.drawText(10, 40, function_name);
   painter.drawText(10, 60, draw_N);
   painter.drawText(10, 80, draw_a_b);
-  painter.drawText(10, 100, draw_min_max);
+  painter.drawText(10, 100, draw_abs_max);
   painter.drawText(10, 120, draw_scale_p);
   
   painter.setPen(black_pen);

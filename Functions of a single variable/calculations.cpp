@@ -45,13 +45,14 @@ void Window::find_abs_max()
 }
 void Window::set_function_array()
 {
+  double delta = (b - a)/(N - 1);
   delete [] func;
   delete [] x;
   delete [] func_der;
   x = new double[N];
   func = new double[N];
   func_der = new double[N];
-  for(int i = 0; i < N; i++) x[i] = a + i*(b - a)/(N - 1);
+  for(int i = 0; i < N; i++) x[i] = a + i*delta;
   for(int i = 0; i < N; i++) func[i] = f(x[i]);
   for(int i = 0; i < N; i++) func_der[i] = f_der(x[i]);
   find_abs_max();

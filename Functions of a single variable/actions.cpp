@@ -10,7 +10,11 @@ int Window::command_line(int argc, char *argv[])
       || sscanf (argv[3], "%d", &N) != 1
       || N < 3
       || sscanf(argv[4], "%d", &k) != 1
-      || (k < 0 || k > NUMBER_OF_FUNCTIONS - 1)) return -2;
+      || (k < 0 || k > NUMBER_OF_FUNCTIONS - 1)) 
+  {
+    std:: cout<<"\nUsage: a b n k\nn > 2\nk = 0...6"<<std::endl;
+    return -2;
+  }
   choose_function();
   choose_approximation();
   set_function_array();
@@ -21,7 +25,7 @@ int Window::command_line(int argc, char *argv[])
 
 void Window::reduce_n()
 {
-  N = (N/2 < 3)? 3: N/2;
+  N = (N/2 <= 2)? 3: N/2;
   set_function_array();
   calculate_approximation();
   update();

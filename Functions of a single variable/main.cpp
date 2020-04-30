@@ -17,6 +17,7 @@ int main (int argc, char *argv[])
   if(graph->command_line(argc, argv))
   {
     QMessageBox::warning (0,  "Error!", "Usage: a b n k\nn > 2\nk = 0...6");
+    delete window;
     return -1;
   }
   action = actions_bar->addAction("&Change method", graph, SLOT(change_approximation()));
@@ -35,6 +36,8 @@ int main (int argc, char *argv[])
   action->setShortcut(QString("3"));
   action = actions_bar->addAction("+", graph, SLOT(decrease_scale()));
   action->setShortcut(QString("2"));
+  action = actions_bar->addAction ("&Exit", window, SLOT (close ()));
+  action->setShortcut (QString ("Ctrl+C"));
   actions_bar->setMaximumHeight(30);
   window->setMenuBar(actions_bar);
   window->setCentralWidget(graph);

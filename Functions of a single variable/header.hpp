@@ -5,6 +5,7 @@
 
 int approximation_0(int N, double *x, double *func, double *func_der, double *coef); 
 int approximation_1(int N, double *x, double *func, double *func_der, double *coef);
+double d(int i, int N, double *x, double *func);
 double polynomial_value_0(double x, double a, double b, int N, double *coef);
 double polynomial_value_1(double x, double a, double b, int N, double *coef);
 double f_0(double x);
