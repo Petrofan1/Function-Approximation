@@ -1,98 +1,97 @@
 #include "header.hpp"
+#include "widget.h"
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
-    if(parse_command_line(argc, argv) == -1) return -1;
-
-    int n, n_double, /*k,*/ num_ver, num_ver_double;
-    int *vector_msr;
-    double q;
-    double *func, *matrix_msr, *right;
-    point *vertices, *cutout_vertices, *x;
-    double (*f) (point) = f_0;
-
-    vertices = new point[4];
-    cutout_vertices = new point[4];
-
-    for(int i = 0; i < 4; i++)
+    int parse = parse_command_line(argc, argv);
+    int n, k, p;
+    double eps;
+    char* file_name;
+    if(parse == -1) return 0;
+    else if(parse == 2)
     {
-        vertices[i].x = atof(argv[2*i + 1]);
-        vertices[i].y = atof(argv[2*i + 2]);
+        n = 32;
+        k = 1;
+        eps = 1e-16;
+        file_name = 0;
+        p = 4;
+    }
+    else
+    {
+        file_name = argv[1];
+        n = atoi(argv[2]);
+        k = atoi(argv[4]);
+        eps = atof(argv[5]);
+        p = atoi(argv[6]);
     }
 
-    if(convexity(vertices) == -1)
+    QApplication app(argc, argv);
+    QAction *action;
+    Widget* w;
+    QMainWindow *window;
+    QMenuBar *actions_bar;
+    QToolBar *tool_bar;
+    try
     {
-        delete [] vertices;
-        delete [] cutout_vertices;
-        return 0;
-    }
-
-    n = atoi(argv[9]);
-    q = atof(argv[10]);
-    // k = atoi(argv[11]);
-
-    n_double = n*2;
-    num_ver = number_of_vertices(n);
-    num_ver_double = number_of_vertices(n_double);
-
-    // choose_function(f, k);
-
-
-    set_vertices_of_cutout(vertices, cutout_vertices, q);
-
-    for(int i = 0; i < 4; i++)
-    {
-        cout<<cutout_vertices[i].x<<" "<<cutout_vertices[i].y<<endl;
-    }
-
-    x = new point[num_ver_double];
-    func = new double[num_ver_double];
-    fill_f_and_x(f, vertices, cutout_vertices, func, x, n);
     
-    Triangle *T = static_cast<Triangle*>(operator new[] (6*sizeof(Triangle)));
-    for(int i = 0; i < 3; i++)
-    {
-        new(T + 2*i) Triangle(vertices[i], vertices[i + 1], cutout_vertices[i], n);
-        new(T + 2*i + 1) Triangle(cutout_vertices[i], vertices[i + 1], cutout_vertices[i + 1], n);
-    }
+        w = new Widget(0, file_name, k, n, eps, p);
+        window = new QMainWindow;
+        actions_bar = new QMenuBar(window);
+        tool_bar = new QToolBar(window);
 
-    matrix_msr = new double[7*num_ver];
-    vector_msr = new int[7*num_ver];
-    right = new double[num_ver];
-    memset(matrix_msr, 0, 7*num_ver*sizeof(double));
-    memset(vector_msr, 0, 7*num_ver*sizeof(int));
-    memset(right, 0, num_ver*sizeof(double));
+        w->setAutoFillBackground(true);
+        action = actions_bar->addAction("&Change function", w, SLOT(change_function()));
+        action->setShortcut(QString("0"));
+        action = actions_bar->addAction("&Change graph", w, SLOT(change_graph()));
+        action->setShortcut(QString("1"));
+        action = actions_bar->addAction("&Increase scale", w, SLOT(increase_scale()));
+        action->setShortcut(QString("2"));
+        action = actions_bar->addAction("&Reduce scale", w, SLOT(reduce_scale()));
+        action->setShortcut(QString("3"));
+        action = actions_bar->addAction("&Increase n", w, SLOT(increase_n()));
+        action->setShortcut(QString("4"));
+        action = actions_bar->addAction("&Reduce n", w, SLOT(reduce_n()));
+        action->setShortcut(QString("5"));
+        action = actions_bar->addAction("&Add delta", w, SLOT(increase_p()));
+        action->setShortcut(QString("6"));
+        action = actions_bar->addAction("&Substract delta", w, SLOT(reduce_p()));
+        action->setShortcut(QString("7"));
+        action = actions_bar->addAction("&Rotate clockwise", w, SLOT(rotate_clockwise()));
+        action->setShortcut(QString("8"));
+        action = actions_bar->addAction("&Rotate counterclockwise", w, SLOT(rotate_counterclockwise()));
+        action->setShortcut(QString("9"));
+        
+        
+        action = tool_bar->addAction("&Change projection", w, SLOT(change_projection()));
+        action->setShortcut(QString("p"));
+        action = tool_bar->addAction("&Change point of view", w, SLOT(change_point_of_view()));
+        action->setShortcut(QString("-"));
+        action = tool_bar->addAction("&Draw a coordinate grid", w, SLOT(coordinate_grid()));
+        action->setShortcut(QString("c"));
+        action = tool_bar->addAction("&Draw a split grid", w, SLOT(split_grid()));
+        action->setShortcut(QString("g"));
+        action = tool_bar->addAction ("&Exit", window, SLOT (close()));
+        action->setShortcut (QString ("Ctrl+C"));
+
+        
+
+        window->setMenuBar(actions_bar);
+        window->addToolBar(Qt::BottomToolBarArea, tool_bar);
+        window->setCentralWidget(w);
+        window->show();
+        app.exec();
+
+    }
+    catch(int err)
+    {
+        return -1;
+    }
     
-    fill_matrix(matrix_msr, vector_msr, x, T, n);
-
-    fill_f_and_x(f, vertices, cutout_vertices, func, x, n_double);
-    fill_right_side(right, func, T, n);
-
-    for(int i = 0; i < 7*num_ver; i++)
-    {
-        cout<<matrix_msr[i]<<" ";
-    }
-    cout<<"\n"<<endl;
-    for(int i = 0; i < 7*num_ver; i++)
-    {
-        cout<<vector_msr[i]<<" ";
-    }
-    cout<<"\n"<<endl;
-    print_system_msr(matrix_msr, vector_msr, right, n);
-
-    delete[] x;
-    delete[] func;
-    delete[] right;
-    delete T;
-    // for(int i = 0; i < 6; i++)
-    // {
-    //     delete T[i];
-    // }
-    delete[] matrix_msr;
-    delete[] vector_msr; 
-    delete[] vertices;
-    delete[] cutout_vertices;
+    delete actions_bar;
+    delete tool_bar;
+    delete w;
+    delete window;
     return 0;
 }
