@@ -4,4 +4,4 @@
 ### Функционал программы
 Программа строит 3 вида графиков:
 * График непосредственно функции
-![График функции](https://github.com/Petrofan1/Function-approximation/raw/master/Functions\ of\ two\ variables/images/image.png)
+![График функции](https://github.com/Petrofan1/Function-approximation/raw/master/Functions_of_two_variables/images/image.png)
