@@ -12,4 +12,14 @@
 3. График невязки 
 <img src="https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/residual.png" width="700" allign="middle">
 
-Аппроксимируемые функции меняются по циклу нажатием соответствующей кнопки в панели упраления или с помощью шортката. Всего в программе прописаны 8 функций (см. **[functions.cpp](functions.cpp)**.
+Аппроксимируемые функции меняются по циклу нажатием соответствующей кнопки *Change function* на панели упраления или с помощью шортката. Всего в программе прописаны 8 функций (см. **[functions.cpp](functions.cpp)**). 
+
+Изображение графика может быть построено как с помощью перспективной, так и с помощью ортогональной проекций. Вид проекции меняется по циклу нажатием соответствующей кнопки *Change projection* на панели управления или с помощью шортката:
+* Перспективная проекция
+<img src="https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/perspective.png" width="700" allign="middle">
+
+* Ортогональная проекция 
+<img src="https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/ortho.png" width="700" allign="middle">
+
+
+
