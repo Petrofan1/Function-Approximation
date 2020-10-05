@@ -6,6 +6,6 @@
 1. График непосредственно функции
 ![График функции](https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/func.png)
 2. График аппроксимирующей функции
-<img src="https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/func.png" width="300">
+<img src="https://github.com/Petrofan1/Function-approximation/raw/master/Functions%20of%20two%20variables/images/func.png" width="1000">
 
 
